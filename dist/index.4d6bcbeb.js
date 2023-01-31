@@ -793,6 +793,7 @@ const store = new (0, _common.Store)({
     page: 1,
     movies: []
 });
+console.log(store);
 exports.default = store;
 const searchMovies = async (page)=>{
     // 새로운 영화를 검색한다면, 페이지는 1일 것이고, 영화 정보는 초기화되어야 한다.
@@ -816,6 +817,12 @@ var _common = require("../core/common");
 var _movie = require("../store/movie");
 var _movieDefault = parcelHelpers.interopDefault(_movie);
 class MovieList extends (0, _common.Component) {
+    constructor(){
+        super();
+        (0, _movieDefault.default).subscribe("movies", ()=>{
+            this.render();
+        });
+    }
     render() {
         this.el.classList.add("movie-list");
         this.el.innerHTML = /* html */ `

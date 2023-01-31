@@ -6,6 +6,7 @@ const store = new Store({
   page: 1,
   movies: [], // 영화정보 내용
 });
+console.log(store);
 
 export default store;
 export const searchMovies = async (page) => {
