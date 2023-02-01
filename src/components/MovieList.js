@@ -1,9 +1,15 @@
 import { Component } from "../core/common";
 import movieStore, { searchMovies } from "../store/movie";
+import MovieItem from "./MovieItem";
 export default class MovieList extends Component {
   constructor() {
     super();
     movieStore.subscribe("movies", () => {
+      console.log("영화 정보 갱신", movieStore.state.movies);
+      this.render();
+    });
+    movieStore.subscribe("loading", () => {
+      console.log("로딩 중..", movieStore.state.loading);
       this.render();
     });
   }
@@ -11,17 +17,25 @@ export default class MovieList extends Component {
     this.el.classList.add("movie-list");
     this.el.innerHTML = /* html */ `
             <div class="movies"></div>
+            <div class="the-loader hide"></div> 
         `;
 
     const moviesEl = this.el.querySelector(".movies");
     moviesEl.append(
-      movieStore.state.movies.map((movie) => {
-        return movie.Title;
+      // 각각의 MovieItem 컴포넌트는 배열로 moviesEl 에 추가되지 않는다.
+      // 배열이 아닌 하나의 El로써 추가되어야 하므로,
+      // map의 결과를 전개연산자로 append 한다.
+      ...movieStore.state.movies.map((movie) => {
+        return new MovieItem({ movie }).el;
       })
     );
+
+    const loaderEl = this.el.querySelector(".the-loader");
+    movieStore.state.loading
+      ? loaderEl.classList.remove("hide")
+      : loaderEl.classList.add("hide");
   }
 }
-
 // store 변경 순서
 // 1. Home 컴포넌트 > Search 컴포넌트 내, input El에 영화제목 입력(input 이벤트 발동)
 // 1.1. movieStore.state.searchText = inputEl.value;

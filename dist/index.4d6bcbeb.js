@@ -715,18 +715,21 @@ var _search = require("../components/Search");
 var _searchDefault = parcelHelpers.interopDefault(_search);
 var _movieList = require("../components/MovieList");
 var _movieListDefault = parcelHelpers.interopDefault(_movieList);
+var _movieListMore = require("../components/MovieListMore");
+var _movieListMoreDefault = parcelHelpers.interopDefault(_movieListMore);
 class Home extends (0, _common.Component) {
     render() {
         const hedline = new (0, _headlineDefault.default)().el;
         const search = new (0, _searchDefault.default)().el;
-        const movielist = new (0, _movieListDefault.default)().el;
+        const movieList = new (0, _movieListDefault.default)().el;
+        const movieListMore = new (0, _movieListMoreDefault.default)().el;
         this.el.classList.add("container");
-        this.el.append(hedline, search, movielist);
+        this.el.append(hedline, search, movieList, movieListMore);
     }
 }
 exports.default = Home;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3"}],"gaVgo":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3","../components/MovieListMore":"3ZUar"}],"gaVgo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -788,27 +791,51 @@ parcelHelpers.export(exports, "searchMovies", ()=>searchMovies);
 var _common = require("../core/common");
 var _search = require("../components/Search");
 var _searchDefault = parcelHelpers.interopDefault(_search);
+// ----- Movie-app 의 영화 정보 ------ //
 const store = new (0, _common.Store)({
     searchText: "",
     page: 1,
-    movies: []
+    pageMax: 1,
+    movies: [],
+    loading: false
 });
-console.log(store);
 exports.default = store;
 const searchMovies = async (page)=>{
+    store.state.loading = true;
+    // MovieListMore 컴포넌트에서 전달한 page 정보를 업데이트 함
+    store.state.page = page;
     // 새로운 영화를 검색한다면, 페이지는 1일 것이고, 영화 정보는 초기화되어야 한다.
     if (page === 1) store.state.movies = [];
     const res = await fetch(`https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-    //  res.json 의 Search Array 요소로 movies Array 를 update
-    // 객체 구조분해 할당
-    const { Search  } = await res.json();
+    const { Search , totalResults  } = await res.json();
     //! store.state.movies 에 Search만 할당해서는 안된다
     //* page가 변경됨에 따라 추가로 가져오는 영화 정보를 포함해서 업데이트 되어야 하기 때문이다.
     store.state.movies = [
         ...store.state.movies,
         ...Search
     ];
-};
+    store.state.pageMax = Math.ceil(Number(totalResults) / 10);
+    store.state.loading = false;
+//
+}; //  res.json 의 Search Array 요소로 movies Array 를 update
+ // 영화 정보는 10개씩 1페이지로 구성되므로,
+ // store.state.searchText 에 해당하는 제목을 가진 영화들의 총 개수를 알아야한다.
+ // 이때, 동일 제목을 가진 영화의 총 편수(데이터)가 res.json.totalRsults 에 담겨, 서버로부터 전달되고 있다.
+ // 따라서, store.state에서 totalResults를 관리해야하므로,
+ // 1. 1page 당 10편 이하로 계산하여, pageMax에 그 값을 할당한다.
+ // 2. 현재 페이지를 나타내는 store.state.page와
+ //    최대 페이지를 나타내는 store.state.pageMax 를 비교하여,
+ //    더보기 버튼 노출 유무를 결정할 수 있다.
+ // ---  store.state.loading 처리 ---
+ // 1. 상태를 관리하는 store에 로딩을 관리하는 state인 loading을 추가하고, 기본값으로 false를 할당한다.
+ // 2. 로딩이 적용되어야 하는 구간은 어디일까?
+ //    === 서버로부터, 영화 정보를 받아오는 구간에 적용되어야 하므로,
+ //    1) searchMoives()를 실행할때, 가장 먼저, store.state.loading = true 로 변경, 로딩을 진행시킨다.
+ //    2) 서버로 부터 영화 정보를 비동기로 전달 받고, 이를 store.state.movies 배열에 요소로 비동기로 할당한다.
+ //    3) 영화 정보 할당(await)이 끝나고, 최대 페이지까지 업데이트가 끝나면,
+ //    4) 비로서, loadgin이 종료됨을 뜻하는  store.state.loading = false 로 변경시킨다.
+ // 3. store의 subscrib()를 사용하여, store의 상태가 변경됨에 따라 콜백함수를 호출시킬 수 있다.
+ //    ==> 이 기능을 사용하여, MovieList 컴포넌트에서 loading을 구독하여, MovieList 컴포넌트를 렌더링 시킨다.
 
 },{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Search":"jqPPz"}],"8UDl3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -816,10 +843,17 @@ parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
 var _movie = require("../store/movie");
 var _movieDefault = parcelHelpers.interopDefault(_movie);
+var _movieItem = require("./MovieItem");
+var _movieItemDefault = parcelHelpers.interopDefault(_movieItem);
 class MovieList extends (0, _common.Component) {
     constructor(){
         super();
         (0, _movieDefault.default).subscribe("movies", ()=>{
+            console.log("영화 정보 갱신", (0, _movieDefault.default).state.movies);
+            this.render();
+        });
+        (0, _movieDefault.default).subscribe("loading", ()=>{
+            console.log("로딩 중..", (0, _movieDefault.default).state.loading);
             this.render();
         });
     }
@@ -827,11 +861,19 @@ class MovieList extends (0, _common.Component) {
         this.el.classList.add("movie-list");
         this.el.innerHTML = /* html */ `
             <div class="movies"></div>
+            <div class="the-loader hide"></div> 
         `;
         const moviesEl = this.el.querySelector(".movies");
-        moviesEl.append((0, _movieDefault.default).state.movies.map((movie)=>{
-            return movie.Title;
+        moviesEl.append(// 각각의 MovieItem 컴포넌트는 배열로 moviesEl 에 추가되지 않는다.
+        // 배열이 아닌 하나의 El로써 추가되어야 하므로,
+        // map의 결과를 전개연산자로 append 한다.
+        ...(0, _movieDefault.default).state.movies.map((movie)=>{
+            return new (0, _movieItemDefault.default)({
+                movie
+            }).el;
         }));
+        const loaderEl = this.el.querySelector(".the-loader");
+        (0, _movieDefault.default).state.loading ? loaderEl.classList.remove("hide") : loaderEl.classList.add("hide");
     }
 } // store 변경 순서
  // 1. Home 컴포넌트 > Search 컴포넌트 내, input El에 영화제목 입력(input 이벤트 발동)
@@ -849,6 +891,69 @@ class MovieList extends (0, _common.Component) {
  //     %주의: 해당 영화를 처음 조회 하므로, searchMovies(page)는 1! %
  // 3. searchMovies(1) 호출 -> Store.state.movies를 기존의 영화 정보를 포함하여, 조회된 영화 정보로 업데이트
 exports.default = MovieList;
+
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./MovieItem":"fAzE8"}],"fAzE8":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+class MovieItem extends (0, _common.Component) {
+    constructor(props){
+        super({
+            props,
+            tagName: "a"
+        });
+    }
+    render() {
+        const { movie  } = this.props;
+        this.el.setAttribute("href", `#/movie?id=${movie.imdbID}`);
+        this.el.classList.add("movie");
+        this.el.style.backgroundImage = `url(${movie.Poster})`;
+        this.el.innerHTML = /* html */ `
+        <div class="info">
+            <div class="year">
+                ${movie.Year}
+            </div>
+            <div class="title">
+                ${movie.Title}
+            </div>
+        </div>
+    `;
+    }
+}
+exports.default = MovieItem;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3ZUar":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _movie = require("../store/movie");
+var _movieDefault = parcelHelpers.interopDefault(_movie);
+class MoiveListMore extends (0, _common.Component) {
+    constructor(){
+        super({
+            tagName: "button"
+        });
+        //? MovieListMore 컴포넌트 활성화 조건
+        //* 1. store.state의 page value와 pageMax value를 비교
+        //* 2. pageMax value > page value
+        //*    ? this.el.classList.remove('hide)
+        //*    : this.el.classList.add('hide)
+        //! 필수조건: pageMax의 변화를 실시간으로 구독해야함
+        (0, _movieDefault.default).subscribe("pageMax", ()=>{
+            const { page , pageMax  } = (0, _movieDefault.default).state;
+            pageMax > page ? this.el.classList.remove("hide") : this.el.classList.add("hide");
+        });
+    }
+    render() {
+        this.el.classList.add("btn", "view-more", "hide");
+        this.el.textContent = "View more..";
+        // 영화 정보를 추가로 가져오는 기능을 수행하므로, 비동기 처리해야함
+        this.el.addEventListener("click", async ()=>{
+            await (0, _movie.searchMovies)((0, _movieDefault.default).state.page + 1);
+        });
+    }
+}
+exports.default = MoiveListMore;
 
 },{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequire6588")
 
