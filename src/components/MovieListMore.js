@@ -23,8 +23,10 @@ export default class MoiveListMore extends Component {
   render() {
     this.el.classList.add("btn", "view-more", "hide");
     this.el.textContent = "View more..";
+
     // 영화 정보를 추가로 가져오는 기능을 수행하므로, 비동기 처리해야함
     this.el.addEventListener("click", async () => {
+      this.el.classList.add("hide");
       await searchMovies(movieStore.state.page + 1);
     });
   }
