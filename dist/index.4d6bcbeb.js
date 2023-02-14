@@ -571,15 +571,18 @@ root.append(new (0, _appDefault.default)().el);
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("./core/common");
+var _theHeader = require("./components/TheHeader");
+var _theHeaderDefault = parcelHelpers.interopDefault(_theHeader);
 class App extends (0, _common.Component) {
     render() {
+        const theHeader = new (0, _theHeaderDefault.default)().el;
         const routerView = document.createElement("router-view");
-        this.el.append(routerView);
+        this.el.append(theHeader, routerView);
     }
 }
 exports.default = App;
 
-},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8uCIi":[function(require,module,exports) {
+},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/TheHeader":"3Cyq4"}],"8uCIi":[function(require,module,exports) {
 ///// Component /////
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -692,7 +695,62 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"3L9mC":[function(require,module,exports) {
+},{}],"3Cyq4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+class TheHeader extends (0, _common.Component) {
+    constructor(){
+        super({
+            tagName: "header",
+            state: {
+                menus: [
+                    {
+                        name: "Search",
+                        href: "#/"
+                    },
+                    {
+                        name: "Movie",
+                        href: "#/movie?id=tt4520988"
+                    },
+                    {
+                        name: "About",
+                        href: "#/about"
+                    }
+                ]
+            }
+        });
+    }
+    render() {
+        console.log(this.el);
+        this.el.innerHTML = /* html */ `
+        <a 
+            href="#/"
+            class="logo">
+            <span>OMDdAPI</span>.COM
+        </a>
+        <nav>
+            <ul>
+                ${this.state.menus.map((menu)=>{
+            return /* html */ `
+                        <li>
+                            <a href="${menu.href}">
+                                ${menu.name}
+                            </a>
+                        </li>
+                    `;
+        }).join("")}
+            </ul>
+        </nav>
+        <a href="#/about" class="user">
+                  <img src="https://heropy.blog/css/images/logo.png" alt="User"/>
+        </a>
+    `;
+    }
+}
+exports.default = TheHeader;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -768,9 +826,7 @@ class Search extends (0, _common.Component) {
     render() {
         this.el.classList.add("search");
         this.el.innerHTML = /* html */ `
-      <input 
-        
-        placeholder="Enter the movie title to search!" />
+      <input value="${(0, _movieDefault.default).state.searchText}" placeholder="Enter the movie title to search!" />
       <button class="btn btn-primary">
         Search!
       </button>
@@ -904,7 +960,6 @@ class MovieList extends (0, _common.Component) {
             }).el;
         }));
         const loaderEl = this.el.querySelector(".the-loader");
-        // console.log(loaderEl);
         (0, _movieDefault.default).state.loading ? loaderEl.classList.remove("hide") : loaderEl.classList.add("hide");
     }
 } // store 변경 순서
@@ -937,6 +992,7 @@ class MovieItem extends (0, _common.Component) {
     }
     render() {
         const { movie  } = this.props;
+        // console.log(" movie : ", movie);
         this.el.setAttribute("href", `#/movie?id=${movie.imdbID}`);
         this.el.classList.add("movie");
         this.el.style.backgroundImage = `url(${movie.Poster})`;
@@ -996,16 +1052,27 @@ var _movie = require("../store/movie");
 var _movieDefault = parcelHelpers.interopDefault(_movie);
 class Movie extends (0, _common.Component) {
     async render() {
+        this.el.classList.add("container", "the-movie");
+        // 상세 정보를 가져 오기 전까지, 스켈레톤 ui 렌더
+        this.el.innerHTML = /* html */ `
+        <div class="poster skeleton"></div>
+        <div class="specs">
+            <div class="title skeleton"></div>
+            <div class="labels skeleton"></div>
+            <div class="plot skeleton"></div>
+        </div>
+    `;
         await (0, _movie.getMovieDetails)(history.state.id);
         console.log((0, _movieDefault.default).state.movie);
         const { movie  } = (0, _movieDefault.default).state;
-        this.el.classList.add("container", "the-movie");
+        // 실시간 이미지 리사이징
+        const bigPoster = movie.Poster.replace("SX300", "SX700");
         this.el.innerHTML = /* html */ `
-    <div style="background-image: url(${movie.Poster})" class='poster'></div>
+    <div style="background-image: url(${bigPoster})" class='poster'></div>
     <div class="specs">
         <div class="title">${movie.Title}</div>
         <div class="labels">
-            <span>${movie.Released}</span> 
+            <span>${movie.Released}</span>
             &nbsp;/&nbsp;
             <span>${movie.Reuntime}</span>
             &nbsp;/&nbsp;

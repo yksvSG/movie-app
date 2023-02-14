@@ -6,8 +6,8 @@ const store = new Store({
   searchText: "",
   page: 1,
   pageMax: 1, // 영화 더보기 최대 페이지
-  movies: [], // 영화정보 내용
-  movie: {}, // 영화 상세 정보
+  movies: [], // 검색어를 포함한 전체 영화 정보
+  movie: {}, // 선택 영화 상세 정보
   loading: false,
   message: "Search for the movie title!",
 });
@@ -32,6 +32,7 @@ export const searchMovies = async (page) => {
     const { Search, totalResults, Response, Error } = await res.json();
     if (Response === "True") {
       store.state.movies = [...store.state.movies, ...Search];
+
       store.state.pageMax = Math.ceil(Number(totalResults) / 10);
     } else {
       store.state.message = Error;
