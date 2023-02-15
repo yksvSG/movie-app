@@ -1071,7 +1071,7 @@ class MovieItem extends (0, _common.Component) {
     }
     render() {
         const { movie  } = this.props;
-        // console.log(" movie : ", movie);
+        console.log(" movie : ", movie);
         this.el.setAttribute("href", `#/movie?id=${movie.imdbID}`);
         this.el.classList.add("movie");
         this.el.style.backgroundImage = `url(${movie.Poster})`;
@@ -1131,6 +1131,11 @@ var _movie = require("../store/movie");
 var _movieDefault = parcelHelpers.interopDefault(_movie);
 class Movie extends (0, _common.Component) {
     async render() {
+        if (!history.state.id) {
+            console.log("------------------------------------");
+            console.log("movie data", history.state.id);
+            console.log("------------------------------------");
+        }
         this.el.classList.add("container", "the-movie");
         // 상세 정보를 가져 오기 전까지, 스켈레톤 ui 렌더
         this.el.innerHTML = /* html */ `

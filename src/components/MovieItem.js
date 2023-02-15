@@ -12,7 +12,7 @@ export default class MovieItem extends Component {
 
   render() {
     const { movie } = this.props;
-    // console.log(" movie : ", movie);
+    console.log(" movie : ", movie);
     this.el.setAttribute("href", `#/movie?id=${movie.imdbID}`);
     this.el.classList.add("movie");
     this.el.style.backgroundImage = `url(${movie.Poster})`;

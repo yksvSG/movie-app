@@ -3,6 +3,12 @@ import movieStore, { getMovieDetails } from "../store/movie";
 
 export default class Movie extends Component {
   async render() {
+    if (!history.state.id) {
+      console.log("------------------------------------");
+      console.log("movie data", history.state.id);
+      console.log("------------------------------------");
+    }
+
     this.el.classList.add("container", "the-movie");
     // 상세 정보를 가져 오기 전까지, 스켈레톤 ui 렌더
     this.el.innerHTML = /* html */ `
@@ -17,6 +23,7 @@ export default class Movie extends Component {
     await getMovieDetails(history.state.id);
     console.log(movieStore.state.movie);
     const { movie } = movieStore.state;
+
     // 실시간 이미지 리사이징
     const bigPoster = movie.Poster.replace("SX300", "SX700");
 
