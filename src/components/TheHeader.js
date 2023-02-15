@@ -29,9 +29,9 @@ export default class TheHeader extends Component {
     //* 이를 해결하기 위해, 브라우저의 활성 기록 항목이 변경될 때 마다(쉽게 말해, 페이지가 변경될 때 마다) 실행 되는 popstate 이벤트를 사용하면 된다. /
     //* 내비게이션 메뉴 버튼 클릭 -> 각 메뉴 버튼에 저장된 href로 이동 -> 페이지 변경 발생 -> popstate 이벤트 호출 -> render 함수 호출
     //* -> 각 메뉴 버튼과 현재 페이지의 hash를 비교 -> 네비게이션 버튼에 active 클래스 추가 및 삭제
-    // window.addEventListener("popstate", () => {
-    //   this.render();
-    // });
+    window.addEventListener("popstate", () => {
+      this.render();
+    });
   }
 
   render() {
@@ -66,7 +66,7 @@ export default class TheHeader extends Component {
             </ul>
         </nav>
         <a href="#/about" class="user">
-                  <img src="https://heropy.blog/css/images/logo.png" alt="User"/>
+           <img src="https://avatars.githubusercontent.com/u/93868114?s=400&u=dfa313a944bb35561a1504bd58e602eeaa193f72&v=4" alt="User"/>
         </a>
     `;
   }

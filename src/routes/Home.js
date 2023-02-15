@@ -9,6 +9,7 @@ export default class Home extends Component {
     const search = new Search().el;
     const movieList = new MovieList().el;
     const movieListMore = new MoiveListMore().el;
+
     this.el.classList.add("container");
     this.el.append(hedline, search, movieList, movieListMore);
   }

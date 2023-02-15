@@ -573,16 +573,19 @@ parcelHelpers.defineInteropFlag(exports);
 var _common = require("./core/common");
 var _theHeader = require("./components/TheHeader");
 var _theHeaderDefault = parcelHelpers.interopDefault(_theHeader);
+var _theFooter = require("./components/TheFooter");
+var _theFooterDefault = parcelHelpers.interopDefault(_theFooter);
 class App extends (0, _common.Component) {
     render() {
         const theHeader = new (0, _theHeaderDefault.default)().el;
         const routerView = document.createElement("router-view");
-        this.el.append(theHeader, routerView);
+        const theFooter = new (0, _theFooterDefault.default)().el;
+        this.el.append(theHeader, routerView, theFooter);
     }
 }
 exports.default = App;
 
-},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/TheHeader":"3Cyq4"}],"8uCIi":[function(require,module,exports) {
+},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/TheHeader":"3Cyq4","./components/TheFooter":"b3x3c"}],"8uCIi":[function(require,module,exports) {
 ///// Component /////
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -720,18 +723,18 @@ class TheHeader extends (0, _common.Component) {
                 ]
             }
         });
-    //! 오류 발생!
-    //* 의도 : 페이지가 변경될 때마다, state로 들어온 href와 현재 페이지의 hash를 비교하여 active 클래스를 추가 및 삭제 함
-    //* 오류 : 내비게이션 버튼을 클릭했을 때, 페이지 변경이 발생하지 않고, href와 hash 비교가 일어나지 않는다.
-    //? 오류 해결!
-    //* 내비게이션 버튼을 클릭 했을 때, 템플릿의 state 값이 클릭한 내비게이션 버튼의 값으로 변경되어야 한다.
-    //* 그러나, state가 변경되기 위해서는 render 함수가 호출되어야만 가능하다.
-    //* 이를 해결하기 위해, 브라우저의 활성 기록 항목이 변경될 때 마다(쉽게 말해, 페이지가 변경될 때 마다) 실행 되는 popstate 이벤트를 사용하면 된다. /
-    //* 내비게이션 메뉴 버튼 클릭 -> 각 메뉴 버튼에 저장된 href로 이동 -> 페이지 변경 발생 -> popstate 이벤트 호출 -> render 함수 호출
-    //* -> 각 메뉴 버튼과 현재 페이지의 hash를 비교 -> 네비게이션 버튼에 active 클래스 추가 및 삭제
-    // window.addEventListener("popstate", () => {
-    //   this.render();
-    // });
+        //! 오류 발생!
+        //* 의도 : 페이지가 변경될 때마다, state로 들어온 href와 현재 페이지의 hash를 비교하여 active 클래스를 추가 및 삭제 함
+        //* 오류 : 내비게이션 버튼을 클릭했을 때, 페이지 변경이 발생하지 않고, href와 hash 비교가 일어나지 않는다.
+        //? 오류 해결!
+        //* 내비게이션 버튼을 클릭 했을 때, 템플릿의 state 값이 클릭한 내비게이션 버튼의 값으로 변경되어야 한다.
+        //* 그러나, state가 변경되기 위해서는 render 함수가 호출되어야만 가능하다.
+        //* 이를 해결하기 위해, 브라우저의 활성 기록 항목이 변경될 때 마다(쉽게 말해, 페이지가 변경될 때 마다) 실행 되는 popstate 이벤트를 사용하면 된다. /
+        //* 내비게이션 메뉴 버튼 클릭 -> 각 메뉴 버튼에 저장된 href로 이동 -> 페이지 변경 발생 -> popstate 이벤트 호출 -> render 함수 호출
+        //* -> 각 메뉴 버튼과 현재 페이지의 hash를 비교 -> 네비게이션 버튼에 active 클래스 추가 및 삭제
+        window.addEventListener("popstate", ()=>{
+            this.render();
+        });
     }
     render() {
         console.log(this.el);
@@ -763,12 +766,56 @@ class TheHeader extends (0, _common.Component) {
             </ul>
         </nav>
         <a href="#/about" class="user">
-                  <img src="https://heropy.blog/css/images/logo.png" alt="User"/>
+           <img src="https://avatars.githubusercontent.com/u/93868114?s=400&u=dfa313a944bb35561a1504bd58e602eeaa193f72&v=4" alt="User"/>
         </a>
     `;
     }
 }
 exports.default = TheHeader;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b3x3c":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class TheFooter extends (0, _common.Component) {
+    constructor(){
+        super({
+            tagName: "footer"
+        });
+    }
+    render() {
+        const { github , repository , name  } = (0, _aboutDefault.default).state;
+        this.el.innerHTML = /* html */ `
+        <div>
+            <a href="${repository}">
+                GitHub Repository
+            </a>
+        </div>
+        <div>
+            <a href="${github}">
+                ${new Date().getFullYear()}
+                ${name}
+            </a>
+        </div>
+        `;
+    }
+}
+exports.default = TheFooter;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../store/about":"4RAJO"}],"4RAJO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+exports.default = new (0, _common.Store)({
+    photo: "https://avatars.githubusercontent.com/u/93868114?s=400&u=dfa313a944bb35561a1504bd58e602eeaa193f72&v=4",
+    name: "Guny / BaeSangGun",
+    email: "gunyfe@gmail.com",
+    blog: "https://velog.io/@sg_yksv77",
+    github: "https://github.com/yksvSG",
+    repository: "https://github.com/yksvSG/movie-app"
+});
 
 },{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -778,6 +825,8 @@ var _home = require("./Home");
 var _homeDefault = parcelHelpers.interopDefault(_home);
 var _movie = require("./Movie");
 var _movieDefault = parcelHelpers.interopDefault(_movie);
+var _about = require("./About");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
 exports.default = (0, _common.createRouter)([
     {
         path: "#/",
@@ -786,10 +835,14 @@ exports.default = (0, _common.createRouter)([
     {
         path: "#/movie",
         component: (0, _movieDefault.default)
+    },
+    {
+        path: "#/about",
+        component: (0, _aboutDefault.default)
     }
 ]);
 
-},{"./Home":"0JSNG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","./Movie":"1LTyN"}],"0JSNG":[function(require,module,exports) {
+},{"./Home":"0JSNG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","./Movie":"1LTyN","./About":"gdB30"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -916,7 +969,7 @@ const getMovieDetails = async (id)=>{
         const res = await fetch(`https://omdbapi.com?apikey=7035c60c&i=${id}&plot=full`);
         store.state.movie = await res.json();
     } catch (error) {
-        console.error("getMovieDetails Error: ", error);
+        console.log("getMovieDetails Error: ", error);
     }
 }; //  res.json 의 Search Array 요소로 movies Array 를 update
  // 영화 정보는 10개씩 1페이지로 구성되므로,
@@ -1125,6 +1178,33 @@ class Movie extends (0, _common.Component) {
 }
 exports.default = Movie;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequire6588")
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gdB30":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class About extends (0, _common.Component) {
+    render() {
+        const { photo , name , email , github , blog  } = (0, _aboutDefault.default).state;
+        this.el.classList.add("container", "about");
+        this.el.innerHTML = /* html */ `
+            <div style="background-image: url(${photo})" class="photo"></div>
+            <p class="name">${name}</p>
+            <p>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${email}" target="_black">${email}</a>
+            </p>
+            <p>
+                <a href="${github}" target="_black">Github</a>
+            </p>
+            <p>
+                <a href="${blog}" target="_black">Blog</a>
+            </p>
+        `;
+    }
+}
+exports.default = About;
+
+},{"../core/common":"8uCIi","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequire6588")
 
 //# sourceMappingURL=index.4d6bcbeb.js.map

@@ -52,7 +52,7 @@ export const getMovieDetails = async (id) => {
     );
     store.state.movie = await res.json();
   } catch (error) {
-    console.error("getMovieDetails Error: ", error);
+    console.log("getMovieDetails Error: ", error);
   }
 };
 
