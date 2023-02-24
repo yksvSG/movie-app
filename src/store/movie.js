@@ -1,61 +1,59 @@
 import { Store } from "../core/common";
-import Search from "../components/Search";
 
-// ----- Movie-app 의 영화 정보 ------ //
 const store = new Store({
   searchText: "",
   page: 1,
-  pageMax: 1, // 영화 더보기 최대 페이지
-  movies: [], // 검색어를 포함한 전체 영화 정보
-  movie: {}, // 선택 영화 상세 정보
+  pageMax: 1,
+  movies: [],
+  movie: {},
   loading: false,
   message: "Search for the movie title!",
 });
 
 export default store;
-
-/* ----- store의 상태를 변경하는 함수 ----- */
 export const searchMovies = async (page) => {
   store.state.loading = true;
-  // MovieListMore 컴포넌트에서 전달한 page 정보를 업데이트 함
   store.state.page = page;
-  // 새로운 영화를 검색한다면, 페이지는 1일 것이고, 영화 정보는 초기화되어야 한다.
   if (page === 1) {
     store.state.movies = [];
     store.state.message = "";
   }
   try {
-    const res = await fetch(
-      `https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`
-    );
-
-    const { Search, totalResults, Response, Error } = await res.json();
+    // const res = await fetch(`https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`)
+    const res = await fetch("/api/movie", {
+      method: "POST",
+      body: JSON.stringify({
+        title: store.state.searchText,
+        page,
+      }),
+    });
+    const { Response, Search, totalResults, Error } = await res.json();
     if (Response === "True") {
       store.state.movies = [...store.state.movies, ...Search];
-
       store.state.pageMax = Math.ceil(Number(totalResults) / 10);
     } else {
       store.state.message = Error;
     }
   } catch (error) {
-    console.error("searchMovies error: ", error);
+    console.log("searchMovies error:", error);
   } finally {
     store.state.loading = false;
   }
-  //
 };
-
 export const getMovieDetails = async (id) => {
   try {
-    const res = await fetch(
-      `https://omdbapi.com?apikey=7035c60c&i=${id}&plot=full`
-    );
+    // const res = await fetch(`https://omdbapi.com?apikey=${APIKEY}&i=${id}&plot=full`)
+    const res = await fetch("/api/movie", {
+      method: "POST",
+      body: JSON.stringify({
+        id,
+      }),
+    });
     store.state.movie = await res.json();
   } catch (error) {
-    console.log("getMovieDetails Error: ", error);
+    console.log("getMovieDetails error:", error);
   }
 };
-
 //  res.json 의 Search Array 요소로 movies Array 를 update
 
 // 영화 정보는 10개씩 1페이지로 구성되므로,
