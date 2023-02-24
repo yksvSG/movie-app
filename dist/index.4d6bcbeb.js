@@ -571,15 +571,21 @@ root.append(new (0, _appDefault.default)().el);
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("./core/common");
+var _theHeader = require("./components/TheHeader");
+var _theHeaderDefault = parcelHelpers.interopDefault(_theHeader);
+var _theFooter = require("./components/TheFooter");
+var _theFooterDefault = parcelHelpers.interopDefault(_theFooter);
 class App extends (0, _common.Component) {
     render() {
+        const theHeader = new (0, _theHeaderDefault.default)().el;
         const routerView = document.createElement("router-view");
-        this.el.append(routerView);
+        const theFooter = new (0, _theFooterDefault.default)().el;
+        this.el.append(theHeader, routerView, theFooter);
     }
 }
 exports.default = App;
 
-},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8uCIi":[function(require,module,exports) {
+},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/TheHeader":"3Cyq4","./components/TheFooter":"b3x3c"}],"8uCIi":[function(require,module,exports) {
 ///// Component /////
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -692,20 +698,157 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"3L9mC":[function(require,module,exports) {
+},{}],"3Cyq4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+class TheHeader extends (0, _common.Component) {
+    constructor(){
+        super({
+            tagName: "header",
+            state: {
+                menus: [
+                    {
+                        name: "Search",
+                        href: "#/"
+                    },
+                    {
+                        name: "Movie",
+                        href: "#/movie"
+                    },
+                    {
+                        name: "About",
+                        href: "#/about"
+                    }
+                ]
+            }
+        });
+        //! 오류 발생!
+        //* 의도 : 페이지가 변경될 때마다, state로 들어온 href와 현재 페이지의 hash를 비교하여 active 클래스를 추가 및 삭제 함
+        //* 오류 : 내비게이션 버튼을 클릭했을 때, 페이지 변경이 발생하지 않고, href와 hash 비교가 일어나지 않는다.
+        //? 오류 해결!
+        //* 내비게이션 버튼을 클릭 했을 때, 템플릿의 state 값이 클릭한 내비게이션 버튼의 값으로 변경되어야 한다.
+        //* 그러나, state가 변경되기 위해서는 render 함수가 호출되어야만 가능하다.
+        //* 이를 해결하기 위해, 브라우저의 활성 기록 항목이 변경될 때 마다(쉽게 말해, 페이지가 변경될 때 마다) 실행 되는 popstate 이벤트를 사용하면 된다. /
+        //* 내비게이션 메뉴 버튼 클릭 -> 각 메뉴 버튼에 저장된 href로 이동 -> 페이지 변경 발생 -> popstate 이벤트 호출 -> render 함수 호출
+        //* -> 각 메뉴 버튼과 현재 페이지의 hash를 비교 -> 네비게이션 버튼에 active 클래스 추가 및 삭제
+        window.addEventListener("popstate", ()=>{
+            this.render();
+        });
+    }
+    render() {
+        console.log(this.el);
+        this.el.innerHTML = /* html */ `
+        <a 
+            href="#/"
+            class="logo">
+            <span>OMDdAPI</span>.COM
+        </a>
+        <nav>
+            <ul>
+                ${this.state.menus.map((menu)=>{
+            const href = menu.href.split("?")[0];
+            console.log(href);
+            const hash = location.hash.split("?")[0];
+            console.log(hash);
+            const isActive = href === hash;
+            console.log(isActive);
+            return /* html */ `
+                        <li>
+                            <a 
+                              class="${isActive ? "active" : ""}"
+                              href="${menu.href}">
+                                ${menu.name}
+                            </a>
+                        </li>
+                    `;
+        }).join("")}
+            </ul>
+        </nav>
+        <a href="#/about" class="user">
+           <img src="https://avatars.githubusercontent.com/u/93868114?s=400&u=dfa313a944bb35561a1504bd58e602eeaa193f72&v=4" alt="User"/>
+        </a>
+    `;
+    }
+}
+exports.default = TheHeader;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b3x3c":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class TheFooter extends (0, _common.Component) {
+    constructor(){
+        super({
+            tagName: "footer"
+        });
+    }
+    render() {
+        const { github , repository , name  } = (0, _aboutDefault.default).state;
+        this.el.innerHTML = /* html */ `
+        <div>
+            <a href="${repository}">
+                GitHub Repository
+            </a>
+        </div>
+        <div>
+            <a href="${github}">
+                ${new Date().getFullYear()}
+                ${name}
+            </a>
+        </div>
+        `;
+    }
+}
+exports.default = TheFooter;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../store/about":"4RAJO"}],"4RAJO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+exports.default = new (0, _common.Store)({
+    photo: "https://avatars.githubusercontent.com/u/93868114?s=400&u=dfa313a944bb35561a1504bd58e602eeaa193f72&v=4",
+    name: "Guny / BaeSangGun",
+    email: "gunyfe@gmail.com",
+    blog: "https://velog.io/@sg_yksv77",
+    github: "https://github.com/yksvSG",
+    repository: "https://github.com/yksvSG/movie-app"
+});
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
 var _home = require("./Home");
 var _homeDefault = parcelHelpers.interopDefault(_home);
+var _movie = require("./Movie");
+var _movieDefault = parcelHelpers.interopDefault(_movie);
+var _about = require("./About");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+var _notFound = require("./NotFound");
+var _notFoundDefault = parcelHelpers.interopDefault(_notFound);
 exports.default = (0, _common.createRouter)([
     {
         path: "#/",
         component: (0, _homeDefault.default)
+    },
+    {
+        path: "#/movie",
+        component: (0, _movieDefault.default)
+    },
+    {
+        path: "#/about",
+        component: (0, _aboutDefault.default)
+    },
+    {
+        path: ".*",
+        component: (0, _notFoundDefault.default)
     }
 ]);
 
-},{"./Home":"0JSNG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi"}],"0JSNG":[function(require,module,exports) {
+},{"./Home":"0JSNG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","./Movie":"1LTyN","./About":"gdB30","./NotFound":"4fDiL"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -715,18 +858,21 @@ var _search = require("../components/Search");
 var _searchDefault = parcelHelpers.interopDefault(_search);
 var _movieList = require("../components/MovieList");
 var _movieListDefault = parcelHelpers.interopDefault(_movieList);
+var _movieListMore = require("../components/MovieListMore");
+var _movieListMoreDefault = parcelHelpers.interopDefault(_movieListMore);
 class Home extends (0, _common.Component) {
     render() {
         const hedline = new (0, _headlineDefault.default)().el;
         const search = new (0, _searchDefault.default)().el;
-        const movielist = new (0, _movieListDefault.default)().el;
+        const movieList = new (0, _movieListDefault.default)().el;
+        const movieListMore = new (0, _movieListMoreDefault.default)().el;
         this.el.classList.add("container");
-        this.el.append(hedline, search, movielist);
+        this.el.append(hedline, search, movieList, movieListMore);
     }
 }
 exports.default = Home;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3"}],"gaVgo":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3","../components/MovieListMore":"3ZUar"}],"gaVgo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -759,9 +905,7 @@ class Search extends (0, _common.Component) {
     render() {
         this.el.classList.add("search");
         this.el.innerHTML = /* html */ `
-      <input 
-        
-        placeholder="Enter the movie title to search!" />
+      <input value="${(0, _movieDefault.default).state.searchText}" placeholder="Enter the movie title to search!" />
       <button class="btn btn-primary">
         Search!
       </button>
@@ -785,29 +929,73 @@ exports.default = Search;
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "searchMovies", ()=>searchMovies);
+parcelHelpers.export(exports, "getMovieDetails", ()=>getMovieDetails);
 var _common = require("../core/common");
 var _search = require("../components/Search");
 var _searchDefault = parcelHelpers.interopDefault(_search);
+// ----- Movie-app 의 영화 정보 ------ //
 const store = new (0, _common.Store)({
     searchText: "",
     page: 1,
-    movies: []
+    pageMax: 1,
+    movies: [],
+    movie: {},
+    loading: false,
+    message: "Search for the movie title!"
 });
 exports.default = store;
 const searchMovies = async (page)=>{
+    store.state.loading = true;
+    // MovieListMore 컴포넌트에서 전달한 page 정보를 업데이트 함
+    store.state.page = page;
     // 새로운 영화를 검색한다면, 페이지는 1일 것이고, 영화 정보는 초기화되어야 한다.
-    if (page === 1) store.state.movies = [];
-    const res = await fetch(`https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-    //  res.json 의 Search Array 요소로 movies Array 를 update
-    // 객체 구조분해 할당
-    const { Search  } = await res.json();
-    //! store.state.movies 에 Search만 할당해서는 안된다
-    //* page가 변경됨에 따라 추가로 가져오는 영화 정보를 포함해서 업데이트 되어야 하기 때문이다.
-    store.state.movies = [
-        ...store.state.movies,
-        ...Search
-    ];
+    if (page === 1) {
+        store.state.movies = [];
+        store.state.message = "";
+    }
+    try {
+        const res = await fetch(`https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
+        const { Search , totalResults , Response , Error  } = await res.json();
+        if (Response === "True") {
+            store.state.movies = [
+                ...store.state.movies,
+                ...Search
+            ];
+            store.state.pageMax = Math.ceil(Number(totalResults) / 10);
+        } else store.state.message = Error;
+    } catch (error) {
+        console.error("searchMovies error: ", error);
+    } finally{
+        store.state.loading = false;
+    }
+//
 };
+const getMovieDetails = async (id)=>{
+    try {
+        const res = await fetch(`https://omdbapi.com?apikey=7035c60c&i=${id}&plot=full`);
+        store.state.movie = await res.json();
+    } catch (error) {
+        console.log("getMovieDetails Error: ", error);
+    }
+}; //  res.json 의 Search Array 요소로 movies Array 를 update
+ // 영화 정보는 10개씩 1페이지로 구성되므로,
+ // store.state.searchText 에 해당하는 제목을 가진 영화들의 총 개수를 알아야한다.
+ // 이때, 동일 제목을 가진 영화의 총 편수(데이터)가 res.json.totalRsults 에 담겨, 서버로부터 전달되고 있다.
+ // 따라서, store.state에서 totalResults를 관리해야하므로,
+ // 1. 1page 당 10편 이하로 계산하여, pageMax에 그 값을 할당한다.
+ // 2. 현재 페이지를 나타내는 store.state.page와
+ //    최대 페이지를 나타내는 store.state.pageMax 를 비교하여,
+ //    더보기 버튼 노출 유무를 결정할 수 있다.
+ // ---  store.state.loading 처리 ---
+ // 1. 상태를 관리하는 store에 로딩을 관리하는 state인 loading을 추가하고, 기본값으로 false를 할당한다.
+ // 2. 로딩이 적용되어야 하는 구간은 어디일까?
+ //    === 서버로부터, 영화 정보를 받아오는 구간에 적용되어야 하므로,
+ //    1) searchMoives()를 실행할때, 가장 먼저, store.state.loading = true 로 변경, 로딩을 진행시킨다.
+ //    2) 서버로 부터 영화 정보를 비동기로 전달 받고, 이를 store.state.movies 배열에 요소로 비동기로 할당한다.
+ //    3) 영화 정보 할당(await)이 끝나고, 최대 페이지까지 업데이트가 끝나면,
+ //    4) 비로서, loadgin이 종료됨을 뜻하는  store.state.loading = false 로 변경시킨다.
+ // 3. store의 subscrib()를 사용하여, store의 상태가 변경됨에 따라 콜백함수를 호출시킬 수 있다.
+ //    ==> 이 기능을 사용하여, MovieList 컴포넌트에서 loading을 구독하여, MovieList 컴포넌트를 렌더링 시킨다.
 
 },{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Search":"jqPPz"}],"8UDl3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -815,16 +1003,43 @@ parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
 var _movie = require("../store/movie");
 var _movieDefault = parcelHelpers.interopDefault(_movie);
+var _movieItem = require("./MovieItem");
+var _movieItemDefault = parcelHelpers.interopDefault(_movieItem);
 class MovieList extends (0, _common.Component) {
+    constructor(){
+        super();
+        (0, _movieDefault.default).subscribe("movies", ()=>{
+            // console.log("영화 정보 갱신", movieStore.state.movies);
+            this.render();
+        });
+        (0, _movieDefault.default).subscribe("loading", ()=>{
+            // console.log("로딩 중..", movieStore.state.loading);
+            this.render();
+        });
+        (0, _movieDefault.default).subscribe("message", ()=>{
+            // console.log("영화 검색 중..", movieStore.state.message);
+            this.render();
+        });
+    }
     render() {
         this.el.classList.add("movie-list");
         this.el.innerHTML = /* html */ `
-            <div class="movies"></div>
+            ${(0, _movieDefault.default).state.message ? `<div class="message">${(0, _movieDefault.default).state.message}</div>` : '<div class="movies"></div>'}
+            <div class="the-loader hide"></div> 
         `;
+        /* 주의 : moviesEl 생성 조건은 movieStore.state.message 가 false 일때만 생성된다. */ //* 이때, .movide 가 this.el에 추가되지 않는다면, moviesEl는 조회할 수 없으므로, null 값을 할당 받게 된다.
+        //* 따라서, moviesEl가 있을 때만, append 시키면 되므로, 선택적 연산자를 적용하면 해결 할 수 있다.
         const moviesEl = this.el.querySelector(".movies");
-        moviesEl.append((0, _movieDefault.default).state.movies.map((movie)=>{
-            return movie.Title;
+        moviesEl?.append(// 각각의 MovieItem 컴포넌트는 배열로 moviesEl 에 추가되지 않는다.
+        // 배열이 아닌 하나의 El로써 추가되어야 하므로,
+        // map의 결과를 전개연산자로 append 한다.
+        ...(0, _movieDefault.default).state.movies.map((movie)=>{
+            return new (0, _movieItemDefault.default)({
+                movie
+            }).el;
         }));
+        const loaderEl = this.el.querySelector(".the-loader");
+        (0, _movieDefault.default).state.loading ? loaderEl.classList.remove("hide") : loaderEl.classList.add("hide");
     }
 } // store 변경 순서
  // 1. Home 컴포넌트 > Search 컴포넌트 내, input El에 영화제목 입력(input 이벤트 발동)
@@ -843,6 +1058,181 @@ class MovieList extends (0, _common.Component) {
  // 3. searchMovies(1) 호출 -> Store.state.movies를 기존의 영화 정보를 포함하여, 조회된 영화 정보로 업데이트
 exports.default = MovieList;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequire6588")
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./MovieItem":"fAzE8"}],"fAzE8":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+class MovieItem extends (0, _common.Component) {
+    constructor(props){
+        super({
+            props,
+            tagName: "a"
+        });
+    }
+    render() {
+        const { movie  } = this.props;
+        console.log(" movie : ", movie);
+        this.el.setAttribute("href", `#/movie?id=${movie.imdbID}`);
+        this.el.classList.add("movie");
+        this.el.style.backgroundImage = `url(${movie.Poster})`;
+        this.el.innerHTML = /* html */ `
+        <div class="info">
+            <div class="year">
+                ${movie.Year}
+            </div>
+            <div class="title">
+                ${movie.Title}
+            </div>
+        </div>
+    `;
+    }
+}
+exports.default = MovieItem;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3ZUar":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _movie = require("../store/movie");
+var _movieDefault = parcelHelpers.interopDefault(_movie);
+class MoiveListMore extends (0, _common.Component) {
+    constructor(){
+        super({
+            tagName: "button"
+        });
+        //? MovieListMore 컴포넌트 활성화 조건
+        //* 1. store.state의 page value와 pageMax value를 비교
+        //* 2. pageMax value > page value
+        //*    ? this.el.classList.remove('hide)
+        //*    : this.el.classList.add('hide)
+        //! 필수조건: pageMax의 변화를 실시간으로 구독해야함
+        (0, _movieDefault.default).subscribe("pageMax", ()=>{
+            const { page , pageMax  } = (0, _movieDefault.default).state;
+            pageMax > page ? this.el.classList.remove("hide") : this.el.classList.add("hide");
+        });
+    }
+    render() {
+        this.el.classList.add("btn", "view-more", "hide");
+        this.el.textContent = "View more..";
+        // 영화 정보를 추가로 가져오는 기능을 수행하므로, 비동기 처리해야함
+        this.el.addEventListener("click", async ()=>{
+            this.el.classList.add("hide");
+            await (0, _movie.searchMovies)((0, _movieDefault.default).state.page + 1);
+        });
+    }
+}
+exports.default = MoiveListMore;
+
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1LTyN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _movie = require("../store/movie");
+var _movieDefault = parcelHelpers.interopDefault(_movie);
+class Movie extends (0, _common.Component) {
+    async render() {
+        if (!history.state.id) {
+            console.log("------------------------------------");
+            console.log("movie data", history.state.id);
+            console.log("------------------------------------");
+        }
+        this.el.classList.add("container", "the-movie");
+        // 상세 정보를 가져 오기 전까지, 스켈레톤 ui 렌더
+        this.el.innerHTML = /* html */ `
+        <div class="poster skeleton"></div>
+        <div class="specs">
+            <div class="title skeleton"></div>
+            <div class="labels skeleton"></div>
+            <div class="plot skeleton"></div>
+        </div>
+    `;
+        await (0, _movie.getMovieDetails)(history.state.id);
+        console.log((0, _movieDefault.default).state.movie);
+        const { movie  } = (0, _movieDefault.default).state;
+        // 실시간 이미지 리사이징
+        const bigPoster = movie.Poster.replace("SX300", "SX700");
+        this.el.innerHTML = /* html */ `
+    <div style="background-image: url(${bigPoster})" class='poster'></div>
+    <div class="specs">
+        <div class="title">${movie.Title}</div>
+        <div class="labels">
+            <span>${movie.Released}</span>
+            &nbsp;/&nbsp;
+            <span>${movie.Reuntime}</span>
+            &nbsp;/&nbsp;
+            <span>${movie.Country}</span>
+        </div>
+        <div class="plot">
+            ${movie.Plot}
+        </div>
+        <div>
+            <h3>Ratings</h3>
+            ${movie.Ratings.map((rating)=>{
+            return `<p>${rating.Source} - ${rating.Value}</p>`;
+        }).join("")}
+        </div>
+        <div>
+            <h3>Actors</h3>
+            <p>${movie.Actors}</p>
+        </div>
+        <div>
+            <h3>Director</h3>
+            <p>${movie.Director}</p>
+        </div>
+        <div>
+            <h3>Genre</h3>
+            <p>${movie.Genre}</p>
+        </div>
+    </div>
+    `;
+    }
+}
+exports.default = Movie;
+
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gdB30":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class About extends (0, _common.Component) {
+    render() {
+        const { photo , name , email , github , blog  } = (0, _aboutDefault.default).state;
+        this.el.classList.add("container", "about");
+        this.el.innerHTML = /* html */ `
+            <div style="background-image: url(${photo})" class="photo"></div>
+            <p class="name">${name}</p>
+            <p>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${email}" target="_black">${email}</a>
+            </p>
+            <p>
+                <a href="${github}" target="_black">Github</a>
+            </p>
+            <p>
+                <a href="${blog}" target="_black">Blog</a>
+            </p>
+        `;
+    }
+}
+exports.default = About;
+
+},{"../core/common":"8uCIi","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4fDiL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _common = require("../core/common");
+class NotFound extends (0, _common.Component) {
+    render() {
+        this.el.classList.add("container", "not-found");
+        this.el.innerHTML = /* html */ `
+            <h1>
+                Sorry..<br>
+                Page Not Found.
+            </h1>
+        `;
+    }
+}
+exports.default = NotFound;
+
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequire6588")
 
 //# sourceMappingURL=index.4d6bcbeb.js.map
