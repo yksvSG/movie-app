@@ -1,1 +1,8 @@
 node_modules
+.vercel
+.env
+dist
+.DS_Store
+.vscode
+.vercel
+.parcel-cache

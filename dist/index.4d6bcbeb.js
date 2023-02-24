@@ -578,14 +578,14 @@ var _theFooterDefault = parcelHelpers.interopDefault(_theFooter);
 class App extends (0, _common.Component) {
     render() {
         const theHeader = new (0, _theHeaderDefault.default)().el;
-        const routerView = document.createElement("router-view");
         const theFooter = new (0, _theFooterDefault.default)().el;
+        const routerView = document.createElement("router-view");
         this.el.append(theHeader, routerView, theFooter);
     }
 }
 exports.default = App;
 
-},{"./core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/TheHeader":"3Cyq4","./components/TheFooter":"b3x3c"}],"8uCIi":[function(require,module,exports) {
+},{"./core/common":"8uCIi","./components/TheHeader":"3Cyq4","./components/TheFooter":"b3x3c","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8uCIi":[function(require,module,exports) {
 ///// Component /////
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -804,7 +804,7 @@ class TheFooter extends (0, _common.Component) {
 }
 exports.default = TheFooter;
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../store/about":"4RAJO"}],"4RAJO":[function(require,module,exports) {
+},{"../core/common":"8uCIi","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4RAJO":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -848,7 +848,7 @@ exports.default = (0, _common.createRouter)([
     }
 ]);
 
-},{"./Home":"0JSNG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","./Movie":"1LTyN","./About":"gdB30","./NotFound":"4fDiL"}],"0JSNG":[function(require,module,exports) {
+},{"../core/common":"8uCIi","./Home":"0JSNG","./Movie":"1LTyN","./About":"gdB30","./NotFound":"4fDiL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -872,7 +872,7 @@ class Home extends (0, _common.Component) {
 }
 exports.default = Home;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3","../components/MovieListMore":"3ZUar"}],"gaVgo":[function(require,module,exports) {
+},{"../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3","../components/MovieListMore":"3ZUar","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gaVgo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -925,15 +925,12 @@ class Search extends (0, _common.Component) {
 }
 exports.default = Search;
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../store/movie":"kq1bo"}],"kq1bo":[function(require,module,exports) {
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kq1bo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "searchMovies", ()=>searchMovies);
 parcelHelpers.export(exports, "getMovieDetails", ()=>getMovieDetails);
 var _common = require("../core/common");
-var _search = require("../components/Search");
-var _searchDefault = parcelHelpers.interopDefault(_search);
-// ----- Movie-app 의 영화 정보 ------ //
 const store = new (0, _common.Store)({
     searchText: "",
     page: 1,
@@ -946,16 +943,21 @@ const store = new (0, _common.Store)({
 exports.default = store;
 const searchMovies = async (page)=>{
     store.state.loading = true;
-    // MovieListMore 컴포넌트에서 전달한 page 정보를 업데이트 함
     store.state.page = page;
-    // 새로운 영화를 검색한다면, 페이지는 1일 것이고, 영화 정보는 초기화되어야 한다.
     if (page === 1) {
         store.state.movies = [];
         store.state.message = "";
     }
     try {
-        const res = await fetch(`https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-        const { Search , totalResults , Response , Error  } = await res.json();
+        // const res = await fetch(`https://omdbapi.com?apikey=7035c60c&s=${store.state.searchText}&page=${page}`)
+        const res = await fetch("/api/movie", {
+            method: "POST",
+            body: JSON.stringify({
+                title: store.state.searchText,
+                page
+            })
+        });
+        const { Response , Search , totalResults , Error  } = await res.json();
         if (Response === "True") {
             store.state.movies = [
                 ...store.state.movies,
@@ -964,18 +966,23 @@ const searchMovies = async (page)=>{
             store.state.pageMax = Math.ceil(Number(totalResults) / 10);
         } else store.state.message = Error;
     } catch (error) {
-        console.error("searchMovies error: ", error);
+        console.log("searchMovies error:", error);
     } finally{
         store.state.loading = false;
     }
-//
 };
 const getMovieDetails = async (id)=>{
     try {
-        const res = await fetch(`https://omdbapi.com?apikey=7035c60c&i=${id}&plot=full`);
+        // const res = await fetch(`https://omdbapi.com?apikey=${APIKEY}&i=${id}&plot=full`)
+        const res = await fetch("/api/movie", {
+            method: "POST",
+            body: JSON.stringify({
+                id
+            })
+        });
         store.state.movie = await res.json();
     } catch (error) {
-        console.log("getMovieDetails Error: ", error);
+        console.log("getMovieDetails error:", error);
     }
 }; //  res.json 의 Search Array 요소로 movies Array 를 update
  // 영화 정보는 10개씩 1페이지로 구성되므로,
@@ -997,7 +1004,7 @@ const getMovieDetails = async (id)=>{
  // 3. store의 subscrib()를 사용하여, store의 상태가 변경됨에 따라 콜백함수를 호출시킬 수 있다.
  //    ==> 이 기능을 사용하여, MovieList 컴포넌트에서 loading을 구독하여, MovieList 컴포넌트를 렌더링 시킨다.
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Search":"jqPPz"}],"8UDl3":[function(require,module,exports) {
+},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8UDl3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1058,7 +1065,7 @@ class MovieList extends (0, _common.Component) {
  // 3. searchMovies(1) 호출 -> Store.state.movies를 기존의 영화 정보를 포함하여, 조회된 영화 정보로 업데이트
 exports.default = MovieList;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./MovieItem":"fAzE8"}],"fAzE8":[function(require,module,exports) {
+},{"../core/common":"8uCIi","../store/movie":"kq1bo","./MovieItem":"fAzE8","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fAzE8":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
