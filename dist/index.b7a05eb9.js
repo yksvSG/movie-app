@@ -563,15 +563,11 @@ var _appDefault = parcelHelpers.interopDefault(_app);
 var _routes = require("./routes");
 var _routesDefault = parcelHelpers.interopDefault(_routes);
 const root = document.querySelector("#root");
-// 타입 가드
-// if (root) {
-//   root.append(new App().el);
-// }
 root?.append(new (0, _appDefault.default)().el);
 // 루트 요소를 등록한 후에 실행해야 하는 플러그인!
 (0, _routesDefault.default)();
 
-},{"./App":"2kQhy","./routes":"3L9mC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2kQhy":[function(require,module,exports) {
+},{"./App":"lyqAI","./routes":"kvHxr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lyqAI":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("./core/common");
@@ -589,13 +585,12 @@ class App extends (0, _common.Component) {
 }
 exports.default = App;
 
-},{"./core/common":"8uCIi","./components/TheHeader":"3Cyq4","./components/TheFooter":"b3x3c","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8uCIi":[function(require,module,exports) {
+},{"./core/common":"cxEge","./components/TheHeader":"6xxgL","./components/TheFooter":"b3x3c","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cxEge":[function(require,module,exports) {
 ///// Component /////
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Component", ()=>Component);
 parcelHelpers.export(exports, "createRouter", ()=>createRouter);
-///// Store /////
 parcelHelpers.export(exports, "Store", ()=>Store);
 class Component {
     constructor(payload = {}){
@@ -610,14 +605,12 @@ class Component {
     // ...
     }
 }
-///// Router /////
 // 페이지 렌더링!
 function routeRender(routes) {
     // 접속할 때 해시 모드가 아니면(해시가 없으면) /#/로 리다이렉트!
     if (!location.hash) history.replaceState(null, "", "/#/"); // (상태, 제목, 주소)
     const routerView = document.querySelector("router-view");
     const [hash, queryString = ""] = location.hash.split("?"); // 물음표를 기준으로 해시 정보와 쿼리스트링을 구분
-    // 1) 쿼리스트링을 객체로 변환해 히스토리의 상태에 저장!
     const query = queryString.split("&").reduce((acc, cur)=>{
         const [key, value] = cur.split("=");
         acc[key] = value;
@@ -626,8 +619,10 @@ function routeRender(routes) {
     history.replaceState(query, ""); // (상태, 제목)
     // 2) 현재 라우트 정보를 찾아서 렌더링!
     const currentRoute = routes.find((route)=>new RegExp(`${route.path}/?$`).test(hash));
-    routerView.innerHTML = "";
-    routerView.append(new currentRoute.component().el);
+    if (routerView) {
+        routerView.innerHTML = "";
+        currentRoute && routerView.append(new currentRoute.component().el);
+    }
     // 3) 화면 출력 후 스크롤 위치 복구!
     window.scrollTo(0, 0);
 }
@@ -641,9 +636,9 @@ function createRouter(routes) {
     };
 }
 class Store {
+    state = {};
+    observers = {};
     constructor(state){
-        this.state = {}; // 상태(데이터)
-        this.observers = {};
         for(const key in state)// 각 상태에 대한 변경 감시(Setter) 설정!
         Object.defineProperty(this.state, key, {
             // Getter
@@ -702,7 +697,7 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"3Cyq4":[function(require,module,exports) {
+},{}],"6xxgL":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -777,7 +772,7 @@ class TheHeader extends (0, _common.Component) {
 }
 exports.default = TheHeader;
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b3x3c":[function(require,module,exports) {
+},{"../core/common":"cxEge","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b3x3c":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -808,7 +803,7 @@ class TheFooter extends (0, _common.Component) {
 }
 exports.default = TheFooter;
 
-},{"../core/common":"8uCIi","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4RAJO":[function(require,module,exports) {
+},{"../core/common":"cxEge","../store/about":"cyOol","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cyOol":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -821,7 +816,7 @@ exports.default = new (0, _common.Store)({
     repository: "https://github.com/yksvSG/movie-app"
 });
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
+},{"../core/common":"cxEge","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kvHxr":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -852,7 +847,7 @@ exports.default = (0, _common.createRouter)([
     }
 ]);
 
-},{"../core/common":"8uCIi","./Home":"0JSNG","./Movie":"1LTyN","./About":"gdB30","./NotFound":"4fDiL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"0JSNG":[function(require,module,exports) {
+},{"../core/common":"cxEge","./Home":"0JSNG","./Movie":"lBPCo","./About":"gdB30","./NotFound":"4fDiL","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -876,7 +871,7 @@ class Home extends (0, _common.Component) {
 }
 exports.default = Home;
 
-},{"../core/common":"8uCIi","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3","../components/MovieListMore":"3ZUar","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gaVgo":[function(require,module,exports) {
+},{"../core/common":"cxEge","../components/Headline":"gaVgo","../components/Search":"jqPPz","../components/MovieList":"8UDl3","../components/MovieListMore":"3ZUar","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gaVgo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -899,7 +894,7 @@ class Headline extends (0, _common.Component) {
 }
 exports.default = Headline;
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jqPPz":[function(require,module,exports) {
+},{"../core/common":"cxEge","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jqPPz":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -929,15 +924,12 @@ class Search extends (0, _common.Component) {
 }
 exports.default = Search;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kq1bo":[function(require,module,exports) {
+},{"../core/common":"cxEge","../store/movie":"aM6gZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aM6gZ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "searchMovies", ()=>searchMovies);
 parcelHelpers.export(exports, "getMovieDetails", ()=>getMovieDetails);
 var _common = require("../core/common");
-var _search = require("../components/Search");
-var _searchDefault = parcelHelpers.interopDefault(_search);
-// import { Store } from "../core/heropy";
 const store = new (0, _common.Store)({
     searchText: "",
     page: 1,
@@ -1011,7 +1003,7 @@ const getMovieDetails = async (id)=>{
  // 3. store의 subscrib()를 사용하여, store의 상태가 변경됨에 따라 콜백함수를 호출시킬 수 있다.
  //    ==> 이 기능을 사용하여, MovieList 컴포넌트에서 loading을 구독하여, MovieList 컴포넌트를 렌더링 시킨다.
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Search":"jqPPz"}],"8UDl3":[function(require,module,exports) {
+},{"../core/common":"cxEge","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8UDl3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1072,7 +1064,7 @@ class MovieList extends (0, _common.Component) {
  // 3. searchMovies(1) 호출 -> Store.state.movies를 기존의 영화 정보를 포함하여, 조회된 영화 정보로 업데이트
 exports.default = MovieList;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","./MovieItem":"fAzE8","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fAzE8":[function(require,module,exports) {
+},{"../core/common":"cxEge","../store/movie":"aM6gZ","./MovieItem":"fAzE8","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fAzE8":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1103,7 +1095,7 @@ class MovieItem extends (0, _common.Component) {
 }
 exports.default = MovieItem;
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3ZUar":[function(require,module,exports) {
+},{"../core/common":"cxEge","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3ZUar":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1137,7 +1129,7 @@ class MoiveListMore extends (0, _common.Component) {
 }
 exports.default = MoiveListMore;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1LTyN":[function(require,module,exports) {
+},{"../core/common":"cxEge","../store/movie":"aM6gZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lBPCo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1172,7 +1164,7 @@ class Movie extends (0, _common.Component) {
         <div class="labels">
             <span>${movie.Released}</span>
             &nbsp;/&nbsp;
-            <span>${movie.Reuntime}</span>
+            <span>${movie.Runtime}</span>
             &nbsp;/&nbsp;
             <span>${movie.Country}</span>
         </div>
@@ -1203,7 +1195,7 @@ class Movie extends (0, _common.Component) {
 }
 exports.default = Movie;
 
-},{"../core/common":"8uCIi","../store/movie":"kq1bo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gdB30":[function(require,module,exports) {
+},{"../core/common":"cxEge","../store/movie":"aM6gZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gdB30":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1230,7 +1222,7 @@ class About extends (0, _common.Component) {
 }
 exports.default = About;
 
-},{"../core/common":"8uCIi","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4fDiL":[function(require,module,exports) {
+},{"../core/common":"cxEge","../store/about":"cyOol","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4fDiL":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _common = require("../core/common");
@@ -1247,6 +1239,6 @@ class NotFound extends (0, _common.Component) {
 }
 exports.default = NotFound;
 
-},{"../core/common":"8uCIi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["cnpQZ","jeorp"], "jeorp", "parcelRequire6588")
+},{"../core/common":"cxEge","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["cnpQZ","jeorp"], "jeorp", "parcelRequire6588")
 
 //# sourceMappingURL=index.b7a05eb9.js.map

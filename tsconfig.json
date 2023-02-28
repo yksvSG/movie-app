@@ -11,8 +11,8 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "api/**/*.ts",
-    "src/App.js",
-    "src/core/common.js"
+    "src/App.ts",
+    "src/core/common.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

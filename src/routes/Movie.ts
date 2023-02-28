@@ -34,7 +34,7 @@ export default class Movie extends Component {
         <div class="labels">
             <span>${movie.Released}</span>
             &nbsp;/&nbsp;
-            <span>${movie.Reuntime}</span>
+            <span>${movie.Runtime}</span>
             &nbsp;/&nbsp;
             <span>${movie.Country}</span>
         </div>
